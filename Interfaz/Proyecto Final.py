@@ -67,134 +67,6 @@ def get_distance(faceMesh, pt1, pt2):
     result = dist.euclidean(p1, p2)
     return result
 
-# Funcion Visualizar
-def visualizar():
-    global pantalla, angle, contador,estado1,estado2, frame, rgb, hsv, gray, slival1, slival11, slival2, slival22, slival3, slival33, slival4, slival44, i, j, goles, atajadas
-    # Leemos la videocaptura
-    if cap is not None:
-        ret, frame = cap.read()
-
-        # Si es correcta
-        if ret == True:
-
-            if (rgb == 1 and hsv == 1 and gray == 0):
-                frame = cv2.flip(frame,1)
-                # Color BGR
-                frame = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
-            #FULL
-            if (rgb == 1 and hsv == 0 and gray == 0):
-                frame = cv2.flip(frame,1)
-                # Color BGR
-                frame = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
-                mp_drawing = mp.solutions.drawing_utils
-                #mp_holistic = mp.solutions.holistic
-                mp_pose = mp.solutions.pose
-                # Initiate holistic model
-                with mp_pose.Pose(static_image_mode=False) as pose:
-                        # Recolor Feed
-                        frame = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
-
-                        width = int(frame.shape[1] )   # Otra opcion: height, width, layers = frame.shape
-                        height = int(frame.shape[0] )
-                        dim = (width, height)
-                        # Make Detections
-                        #results = holistic.process(frame)
-                        results = pose.process (frame)
-                        #print(results.pose_world_landmarks.landmark[11].z)
-
-                        #face_landmarks, pose_landmarks, left_hand_landmarks, right_hand_landmarks
-
-                        # Recolor image back to BGR for rendering
-                        frame = cv2.cvtColor(frame, cv2.COLOR_RGB2BGR)
-
-                        # Adquiero coordenadas de los marcadores
-                        if results.pose_landmarks is not None:
-                            # Landmark 24
-                            x1 = int(results.pose_landmarks.landmark[24].x * width)
-                            y1 = int(results.pose_landmarks.landmark[24].y * height)
-                
-                            # Landmark 26
-                            x2 = int(results.pose_landmarks.landmark[26].x * width)
-                            y2 = int(results.pose_landmarks.landmark[26].y * height)
-                
-                            # Landmark 28
-                            x3 = int(results.pose_landmarks.landmark[28].x * width)
-                            y3 = int(results.pose_landmarks.landmark[28].y * height)
-                
-                            x4 = int(results.pose_landmarks.landmark[30].x * width)
-                            y4 = int(results.pose_landmarks.landmark[30].y * height)
-                
-                            x5 = int(results.pose_landmarks.landmark[32].x * width)
-                            y5 = int(results.pose_landmarks.landmark[32].y * height)
-
-                            x11 = int(results.pose_landmarks.landmark[23].x * width)
-                            y11 = int(results.pose_landmarks.landmark[23].y * height)
-
-                            # Landmark 26
-                            x22 = int(results.pose_landmarks.landmark[25].x * width)
-                            y22 = int(results.pose_landmarks.landmark[25].y * height)
-
-                            # Landmark 28
-                            x33 = int(results.pose_landmarks.landmark[27].x * width)
-                            y33 = int(results.pose_landmarks.landmark[27].y * height)
-
-                            x44 = int(results.pose_landmarks.landmark[29].x * width)
-                            y44 = int(results.pose_landmarks.landmark[29].y * height)
-
-                            x55 = int(results.pose_landmarks.landmark[31].x * width)
-                            y55 = int(results.pose_landmarks.landmark[31].y * height)
-
-                            # Calculo de ángulo:
-                            p1 = np.array([x1, y1])
-                            p2 = np.array([x2, y2])
-                            p3 = np.array([x3, y3])
-
-                            l1 = np.linalg.norm(p2 - p3)
-                            l2 = np.linalg.norm(p1 - p3)
-                            l3 = np.linalg.norm(p1 - p2)
-                            # Calcular el ángulo (teorema del coseno) y lo agrego a V_angles_knee
-                            angle = degrees(acos((l1**2 + l3**2 - l2**2) / (2 * l1 * l3)))
-                            #Rigth leg
-                            cv2.line(frame, (x1, y1), (x2, y2), (3, 202, 251), 30)
-                            cv2.line(frame, (x2, y2), (x3, y3), (3, 202, 251), 30)
-                            cv2.line(frame, (x3, y3), (x4, y4), (3, 202, 251), 30)
-                            cv2.line(frame, (x4, y4), (x5, y5), (3, 202, 251), 30)
-
-                            #Left leg
-                            cv2.line(frame, (x11, y11), (x22, y22), (3, 202, 251), 30)
-                            cv2.line(frame, (x22, y22), (x33, y33), (3, 202, 251), 30)
-                            cv2.line(frame, (x33, y33), (x44, y44), (3, 202, 251), 30)
-                            cv2.line(frame, (x44, y44), (x55, y55), (3, 202, 251), 30)
-
-                            #Grafico landmarks con circulos
-                            cv2.circle(frame, (x1, y1), 20, (5,5,170), 10)
-                            cv2.circle(frame, (x2, y2), 20, (5,5,170), 10)
-                            cv2.circle(frame, (x3, y3), 20, (5,5,170), 10)
-
-                            cv2.circle(frame, (x11, y11), 20, (5,5,170), 10)
-                            cv2.circle(frame, (x22, y22), 20, (5,5,170), 10)
-                            cv2.circle(frame, (x33, y33), 20, (5,5,170), 10)
-                            # Agrego el angulo en el video
-                            cv2.putText(frame, str(int(angle)), (x2, y2 - 30), 1, 5, (255,255,255), 6)
-                            # Agrego info en el video
-                            cv2.putText(frame, "Angulo en grados,", (10, height - 40), 4, 0.75, (20, 20, 20), 2) 
-
-
-            # Rendimensionamos el video
-            frame = imutils.resize(frame, height=500)
-
-            # Convertimos el video
-            im = Image.fromarray(frame)
-            img = ImageTk.PhotoImage(image=im)
-
-            # Mostramos en el GUI
-            lblVideo.configure(image=img)
-            lblVideo.image = img
-            lblVideo.after(10, visualizar)
-
-        else:
-            cap.release()
-
 # Funcion Visualizar2
 def visualizar2():
     global pantalla, angle, contador,estado1,estado2, frame, rgb, hsv, gray, slival1, slival11, slival2, slival22, slival3, slival33, slival4, slival44, i, j, goles, atajadas, textBoxText
@@ -268,8 +140,7 @@ def visualizar2():
             
             if ret == False:
                 break      
-            # Color BGR
-            frame = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
+
             V_time= np.append(V_time, frame_count_result/FPS_result)
             frame_count_result = frame_count_result + 1
 
@@ -284,9 +155,12 @@ def visualizar2():
             #Utilizo el primer frame como pantalla de carga
             if (frame_count_result == 1):
                     loading_page = resized_frame
+                    loading_page = cv2.cvtColor(loading_page, cv2.COLOR_BGR2RGB)
 
             frame_rgb = cv2.cvtColor(resized_frame, cv2.COLOR_BGR2RGB)
             results = pose.process (frame_rgb)
+            
+            #results = pose.process (resized_frame)
 
             # Adquiero coordenadas de los marcadores
             if results.pose_landmarks is not None:
@@ -363,13 +237,17 @@ def visualizar2():
                 #Rigth leg
                 cv2.line(aux_image, (x1, y1), (x2, y2), (3, 202, 251), 20)
                 cv2.line(aux_image, (x2, y2), (x3, y3), (3, 202, 251), 20)
-                cv2.line(aux_image, (x3, y3), (x4, y4), (3, 202, 251), 20)
-                cv2.line(aux_image, (x4, y4), (x5, y5), (3, 202, 251), 20)
+                #Ankle segment
+                #cv2.line(aux_image, (x3, y3), (x4, y4), (3, 202, 251), 20)
+                #Foot segment
+                #cv2.line(aux_image, (x4, y4), (x5, y5), (3, 202, 251), 20)
                 #Left leg
                 cv2.line(aux_image, (x11, y11), (x22, y22), (3, 202, 251), 20)
                 cv2.line(aux_image, (x22, y22), (x33, y33), (3, 202, 251), 20)
-                cv2.line(aux_image, (x33, y33), (x44, y44), (3, 202, 251), 20)
-                cv2.line(aux_image, (x44, y44), (x55, y55), (3, 202, 251), 20)
+                #Ankle segment
+                #cv2.line(aux_image, (x33, y33), (x44, y44), (3, 202, 251), 20)
+                #Foot segment
+                #cv2.line(aux_image, (x44, y44), (x55, y55), (3, 202, 251), 20)
                 #Hip
                 #cv2.line(aux_image, (x1, y1), (x11, y11), (3, 202, 251), 20)
                 #Shoulders
@@ -540,6 +418,8 @@ def visualizar2():
             #if cv2.waitKey(int(delta_t*1000)) & 0xFF == ord(' '):
             #    break
                     # Rendimensionamos el video
+            #Colo correction
+            frame = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
             frame2 = imutils.resize(frame, width=640)
             # Convertimos el video
             im = Image.fromarray(frame2)
