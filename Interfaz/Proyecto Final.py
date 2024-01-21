@@ -5,9 +5,7 @@ import imutils
 import numpy as np
 import mediapipe as mp
 from scipy.spatial import distance as dist
-import random
 from math import acos, degrees
-import SitToStandApp
 import tkinter as tk
 from tkinter import Tk     
 from tkinter.filedialog import askdirectory, askopenfilename
@@ -67,15 +65,13 @@ def get_distance(faceMesh, pt1, pt2):
     result = dist.euclidean(p1, p2)
     return result
 
-# Funcion Visualizar2
-def visualizar2():
-    global pantalla, angle, contador,estado1,estado2, frame, rgb, hsv, gray, slival1, slival11, slival2, slival22, slival3, slival33, slival4, slival44, i, j, goles, atajadas, textBoxText
+# Funcion Visualizar
+def visualizar():
+    global pantalla, angle, contador,estado1,estado2, frame, rgb, hsv, gray, slival1, slival11, slival2, slival22, slival3, slival33, slival4, slival44, i, j, textBoxText
     # Vector de angulos de la rodilla (knee)
     V_angles_knee = np.zeros(0)
     V_angles_knee2 = np.zeros(0)
     V_vel_angles_knee = np.zeros(0)
-    #V_angles_knee_filter = np.zeros(0)
-    #V_vel_angles_knee_filter = np.zeros(0)
     alfa = 0.1
     # Vector de tiempos para cada frame
     V_time = np.zeros(0)
@@ -123,16 +119,6 @@ def visualizar2():
     fourcc = cv2.VideoWriter_fourcc('m', 'p', '4', 'v') #*'mpv4"
     outVideoWriter = cv2.VideoWriter(video_file_result, fourcc, FPS_result, resolution_result) # (name.mp4, fourcc, FPS, resolution)
 
-    # Vector de angulos de la rodilla (knee)
-    V_angles_knee = np.zeros(0)
-    V_angles_knee2 = np.zeros(0)
-    V_vel_angles_knee = np.zeros(0)
-    #V_angles_knee_filter = np.zeros(0)
-    #V_vel_angles_knee_filter = np.zeros(0)
-    alfa = 0.1
-    # Vector de tiempos para cada frame
-    V_time = np.zeros(0)
-
     # Inicio de While True para reproduccion y analisis
     with mp_pose.Pose(static_image_mode=False, model_complexity=2) as pose:
         while True:
@@ -159,49 +145,42 @@ def visualizar2():
 
             frame_rgb = cv2.cvtColor(resized_frame, cv2.COLOR_BGR2RGB)
             results = pose.process (frame_rgb)
-            
-            #results = pose.process (resized_frame)
 
             # Adquiero coordenadas de los marcadores
             if results.pose_landmarks is not None:
                 # Landmark 24
                 x1 = int(results.pose_landmarks.landmark[24].x * width)
                 y1 = int(results.pose_landmarks.landmark[24].y * height)
-
                 # Landmark 26
                 x2 = int(results.pose_landmarks.landmark[26].x * width)
                 y2 = int(results.pose_landmarks.landmark[26].y * height)
-
                 # Landmark 28
                 x3 = int(results.pose_landmarks.landmark[28].x * width)
                 y3 = int(results.pose_landmarks.landmark[28].y * height)
 
+                # Landmarks no usados
                 x4 = int(results.pose_landmarks.landmark[30].x * width)
                 y4 = int(results.pose_landmarks.landmark[30].y * height)
-
                 x5 = int(results.pose_landmarks.landmark[32].x * width)
                 y5 = int(results.pose_landmarks.landmark[32].y * height)
-
                 x6 = int(results.pose_landmarks.landmark[12].x * width)
                 y6 = int(results.pose_landmarks.landmark[12].y * height)
 
+                # Landmark 23
                 x11 = int(results.pose_landmarks.landmark[23].x * width)
                 y11 = int(results.pose_landmarks.landmark[23].y * height)
-
-                # Landmark 26
+                # Landmark 25
                 x22 = int(results.pose_landmarks.landmark[25].x * width)
                 y22 = int(results.pose_landmarks.landmark[25].y * height)
-
-                # Landmark 28
+                # Landmark 27
                 x33 = int(results.pose_landmarks.landmark[27].x * width)
                 y33 = int(results.pose_landmarks.landmark[27].y * height)
 
+                # Landmarks no usados
                 x44 = int(results.pose_landmarks.landmark[29].x * width)
                 y44 = int(results.pose_landmarks.landmark[29].y * height)
-
                 x55 = int(results.pose_landmarks.landmark[31].x * width)
                 y55 = int(results.pose_landmarks.landmark[31].y * height)
-
                 x66 = int(results.pose_landmarks.landmark[11].x * width)
                 y66 = int(results.pose_landmarks.landmark[11].y * height)
 
@@ -237,16 +216,17 @@ def visualizar2():
                 #Rigth leg
                 cv2.line(aux_image, (x1, y1), (x2, y2), (3, 202, 251), 20)
                 cv2.line(aux_image, (x2, y2), (x3, y3), (3, 202, 251), 20)
-                #Ankle segment
-                #cv2.line(aux_image, (x3, y3), (x4, y4), (3, 202, 251), 20)
-                #Foot segment
-                #cv2.line(aux_image, (x4, y4), (x5, y5), (3, 202, 251), 20)
                 #Left leg
                 cv2.line(aux_image, (x11, y11), (x22, y22), (3, 202, 251), 20)
                 cv2.line(aux_image, (x22, y22), (x33, y33), (3, 202, 251), 20)
-                #Ankle segment
+
+                #Rigth ankle segment
+                #cv2.line(aux_image, (x3, y3), (x4, y4), (3, 202, 251), 20)
+                #Rigth foot segment
+                #cv2.line(aux_image, (x4, y4), (x5, y5), (3, 202, 251), 20)
+                #Left ankle segment
                 #cv2.line(aux_image, (x33, y33), (x44, y44), (3, 202, 251), 20)
-                #Foot segment
+                #Left foot segment
                 #cv2.line(aux_image, (x44, y44), (x55, y55), (3, 202, 251), 20)
                 #Hip
                 #cv2.line(aux_image, (x1, y1), (x11, y11), (3, 202, 251), 20)
@@ -276,8 +256,6 @@ def visualizar2():
                 # Agrego info en el video
                 cv2.putText(output, "Angulo en grados,", (10, height - 40), 4, 0.75, (20, 20, 20), 2) 
 
-                #cv2.putText(output, "Pulse ESPACIO para finalizar.", (10, height - 10), 4, 0.75, (20, 20, 20), 2) 
-
                 # Guardado del frame del video resultante
                 outVideoWriter.write(output)
 
@@ -285,10 +263,6 @@ def visualizar2():
                 cv2.putText(loading_page,"Cargando... ", (10, height - 40), 4, 0.75, (20, 20, 20), 2) 
                 #Barra de carga
                 cv2.putText(loading_page, "||", (int((frame_count_result/frame_count)*(width-10)), height - 10), 4, 0.75, (0, 100, 0), 2) 
-                
-                # Muestro pantalla de carga  
-                #cv2.imshow("Cargando...", loading_page) 
-                #Condicional para "Pulse espacio para terminar"
                 
                 # Rendimensionamos el video
                 loading_page2 = imutils.resize(loading_page, width=640)
@@ -299,11 +273,7 @@ def visualizar2():
                 # Mostramos en el GUI
                 lblVideo.configure(image=img)
                 lblVideo.image = img
-                lblVideo.update()
-                #lblVideo.after(10, visualizar2)                
-
-                #if cv2.waitKey(1) & 0xFF == ord(' '):
-                #    break
+                lblVideo.update()               
             else:
                 print("Skipped frame"+str(frame_count_result))
     outVideoWriter.release()
@@ -319,12 +289,13 @@ def visualizar2():
     V_vel_angles_knee_filter = np.convolve(V_vel_angles_knee, kernel, mode='same')
     
     #Output auxiliar
-    print("FPS_original: "+str(FPS_original))
-    print("delta_t: "+str(delta_t))
-    print("V_angles_knee: "+str(V_angles_knee.size))
-    print("V_time: "+str(V_time.size))
-    print("V_angles_knee_filter : "+str(V_angles_knee_filter.size))
-    print("V_vel_angles_knee_filter : "+str(V_vel_angles_knee_filter.size))
+    print("FPS: "+str(FPS_original))
+    print("Delta de tiempo: "+str(delta_t))
+    print("V_angles_knee size: "+str(V_angles_knee.size))
+    print("V_time size: "+str(V_time.size))
+    print("V_angles_knee_filter size: "+str(V_angles_knee_filter.size))
+    print("V_vel_angles_knee_filter size: "+str(V_vel_angles_knee_filter.size))
+
     V_ang_and_vel = np.stack(( V_time[:-2],V_angles_knee_filter[:-2], V_vel_angles_knee_filter[:-2]),1)
     data_path = video_path+"/Datos/"
     with open(data_path+'datos_ang_' + video_file_name + '.csv', 'wb') as h:
@@ -412,13 +383,8 @@ def visualizar2():
     while(video_out.isOpened()):
         ret, frame = video_out.read()
         if ret==True:
-
-            #cv2.putText(frame, "La p.m.m. final es: "+str(Pmean), (10, height - 10), 4, 0.75, (20, 20, 20), 2) 
-            #cv2.imshow('Video procesado',frame)
-            #if cv2.waitKey(int(delta_t*1000)) & 0xFF == ord(' '):
-            #    break
-                    # Rendimensionamos el video
-            #Colo correction
+                    
+            #Color correction
             frame = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
             frame2 = imutils.resize(frame, width=640)
             # Convertimos el video
@@ -488,39 +454,18 @@ def iniciar():
     # Elegimos la camara
     #cap = cv2.VideoCapture(0, cv2.CAP_DSHOW)
     #cap = cv2.VideoCapture("C:/Users/Joaqu/Downloads/VideoSTSDiego.mp4")
-    #visualizar()
-
-    #SitToStandApp.processVideo()
-
-    visualizar2()
+    visualizar()
 
 # Funcion finalizar
 def finalizar():
     #cap.release()
     cv2.destroyAllWindows()
-    global  i, j, goles, atajadas
-    i=0
-    j=250
-    goles=0
-    atajadas=0
     print("FIN")
-
 
 # Variables
 textBoxText=""
 angle = 0
-contador = 0
-estado1 = 0
-estado2 = 0 
-i=0
-j=250
-goles=0
-atajadas=0
 cap = None
-hsv = 0
-gray = 0
-rgb = 1
-detcolor = 0
 
 
 #  Ventana Principal
@@ -548,7 +493,6 @@ fin.place(x = 20, y = 130)
 # TextBox
 textBox = Text(pantalla, height = 40, width = 45, bg= "gray") #,state=DISABLED
 textBox.place(x = 900, y = 20)
-#textBox.insert(INSERT, textBoxText)
 # Video
 lblVideo = Label(pantalla)
 lblVideo.place(x = 240, y = 20)
