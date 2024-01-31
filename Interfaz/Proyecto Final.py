@@ -89,7 +89,6 @@ def visualizar():
     video_file_extension = V_video_file_name[-1]
 
     # Carga de archivo
-    #print( "Se analizará: " + video_file + " ...")
     cap = cv2.VideoCapture(video_file)
 
     # Datos del video cargado
